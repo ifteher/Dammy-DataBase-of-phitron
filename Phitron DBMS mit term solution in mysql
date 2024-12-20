@@ -1,0 +1,87 @@
+# Question 1: Write the difference between Primary Key and Composite Primary Key
+
+=> A Primary Key is a column, or a set of columns,  in a table that uniquely identifies a row in that table. It enforces the integrity of the table by ensuring no duplicate rows exist.
+
+=> A Composite Primary Key is when two or more columns are used together to uniquely identify a row.
+
+# Question 2: Write the difference between using JOIN Query and not using JOIN query
+
+=>Join queries are used to combine data from two or more tables based on a related column. There are different types of joins including INNER JOIN, LEFT JOIN, RIGHT JOIN, and CROSS JOIN.   
+=>Without a JOIN query, you would have to write separate queries to retrieve data from each table and then manipulate the data in your application to establish the relationships between the tables. This can be cumbersome and inefficient, especially for complex queries involving multiple tables.
+
+#Question 3: Create a table of Employees which has the following fields:
+
+a. First Name
+b. Last Name
+c. Date of Birth
+d. Department Id
+e. Salary
+
+**Create a table of Departments which has the following fields:
+
+a. Department Id
+b. Department Name
+c. Manager Id
+d. Location Id
+
+Create both of the tables using proper constraints
+SOLUTION:
+CREATE TABLE employees (
+  employee_id INT PRIMARY KEY AUTO_INCREMENT,
+  first_name VARCHAR(20) NOT NULL,
+  last_name VARCHAR(25) NOT NULL,
+  date_of_birth DATE NOT NULL,
+  department_id INT NOT NULL,
+  salary DECIMAL(8, 2) NOT NULL,
+  FOREIGN KEY (department_id) REFERENCES departments(department_id)
+);
+
+CREATE TABLE departments (
+  department_id INT PRIMARY KEY AUTO_INCREMENT,
+  department_name VARCHAR(30) NOT NULL,
+  manager_id INT,
+  location_id INT,
+  FOREIGN KEY (manager_id) REFERENCES employees(employee_id),
+  FOREIGN KEY (location_id) REFERENCES locations(location_id)
+);
+The AUTO_INCREMENT attribute is used to automatically generate a unique value for the primary key whenever a new row is inserted.
+We have also added FOREIGN KEY constraints to ensure referential integrity between the tables. This means that the department_id in the employees table must reference a valid department_id in the departments table, and the manager_id and location_id in the departments table must reference valid employee_id and location_id values in their respective tables.
+
+# Question 4: Write SQL Query to get the second max salary
+
+There are two ways to solve this problem. Here are two options:
+
+Option 1: Using a subquery
+SELECT MAX(salary)
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);
+This query first finds the maximum salary in the employees table using a subquery. Then, it selects the maximum salary from all the employees who do not have the highest salary.
+
+Option 2: Using LIMIT and ORDER BY
+SELECT salary
+FROM (
+  SELECT salary
+  FROM employees
+  ORDER BY salary DESC
+  LIMIT 2
+) AS emp_salaries
+ORDER BY salary LIMIT 1;
+This query first gets all the salaries from the employees table ordered by salary in descending order. Then it limits the result set to the top two rows using LIMIT. Finally, it selects the maximum salary from these two rows using another ORDER BY and LIMIT clause.
+
+# Question 5: Write SQL Query to show the department names and the average salary of the departments
+
+SELECT department_name, AVG(salary) AS average_salary
+FROM employees
+INNER JOIN departments ON employees.department_id = departments.department_id
+GROUP BY department_name;
+This query uses an INNER JOIN to combine data from the employees and departments tables based on the department_id. The GROUP BY clause groups the data by department_name and the AVG() function calculates the average salary for each department.
+
+# Question 6: Illustrate the INNER, LEFT, RIGHT, SELF Joins
+
+INNER JOIN
+
+An INNER JOIN returns only the rows where there is a match in both tables based on the join condition.
+
+SELECT e.first_name, e.last_name, d.department_name
+FROM employees e
+INNER JOIN departments d ON e.department_id = d.department_id;
